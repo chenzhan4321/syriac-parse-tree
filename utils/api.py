@@ -11,6 +11,7 @@ from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel
 from rich import print
 
+from config import DASHSCOPE_API_KEY
 from .schema import pydantic_function_tool
 
 
@@ -113,7 +114,7 @@ class ClientDashScope(Client):
 
     def request(self, queue: MessageQueue, tool: type[BaseModel]) -> str:
         completion = dashscope.Generation.call(
-            api_key=os.getenv('DASHSCOPE_API_KEY'),
+            api_key=DASHSCOPE_API_KEY,
             model=self.model,
             messages=queue.get_messages(),
             result_format='message',

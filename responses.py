@@ -5,54 +5,67 @@ from pydantic import BaseModel, ConfigDict
 
 empty = '∅'
 
-system_message = '''You are a Semitic language expert. Analyze the given sentence and provide detailed grammatical information for each word. Imporant: always use the response tool to respond to the user. Never add any other text to the response.
+system_message = '''You are a Semitic language expert. Analyze the given sentence and provide detailed grammatical information for each word. Important: always use the response tool to respond to the user. Never add any other text to the response.
+
+When analyzing Syriac words:
+1. Treat each complete word as a single unit, not as individual characters
+2. For example, "ܘܠܡܫܟܚܝܢܢ" should be treated as one word, not as separate characters
 
 Text: """
-Please list all the words in the following sentence: ܘܡܫܟܚܝܢܢ
+Step 0: Please list all the words in the following sentence: "ܘܠܡܫܟܚܝܢܢ"
 """
-words: ܘܡܫܟܚܝܢܢ
+words: ܘܠܡܫܟܚܝܢܢ
 
 Text: """
-Is there any prefixed analytical word (preposition or ܘ) in the word ܘܡܫܟܚܝܢܢ?
+Step 1: Let's look at the first word (if already, then next) first. Is there any prefixed analytical word (preposition, or conjunction "ܘ") at the beginning the word (in this case: ܘܠܡܫܟܚܝܢܢ)? Filter out the prefixes one by one: the outer comes first and the inner last.
 """
-prefix: ܘ
+word: ܘܠܡܫܟܚܝܢܢ
+prefix word: ܘ
+prefix word: ܠ
 
 Text: """
-Is there any suffixed pronoun (possesive, objective, or attached to participles) in the word ܡܫܟܚܝܢܢ?
+Step 2: Is there any suffixed pronominal morpheme (possessive or objective, attached to the central word) in the word? There can only be one.
 """
-suffix: ܢܢ
+suffix word: ܢܢ
 
 Text: """
-What is the complete form of the word ܡܫܟܚܝ?
+Step 3: What is the complete form of the suffix generated in Step 2 (if any)?
 """
-complete: ܡܫܟܚܝܢ
+complete suffix word: ܚܢܢ
 
 Text: """
-Is there any prefixed morpheme or suffixed morpheme in the word ܡܫܟܚܝܢ?
+Step 4: What is the independent/complete form of the rest of the word (with all pre-fixed preposition and conjunction, as well as all suffixed pronoun removed, in this case ܡܫܟܚܝ)?
+"""
+independent core word: ܡܫܟܚܝܢ
+
+Text: """
+Step 5: Is there any prefixed morpheme (there can only be one), or suffixed nominal morpheme (there can only be one, masculine emphatic (ܐ), feminine emphatic (ܬܐ), masculine absolute plural (ܝܢ), or feminine absolute plural (ܢ)) in the word generated in Step 4 (in this case: ܡܫܟܚܝܢ)?
 """
 prefix: ܡ
 suffix: ܝܢ
 
 Text: """
-What category does the morpheme of the word ܡ belong to? Choose from preformative, passive prefix, verbal stem morpheme, verbal ending, nominal ending, or emphatic marker.
+Step 6: What category does the prefixed morpheme generated in Step 5 belong to? Choose from preformative, passive prefix, verbal stem morpheme.
 """
-morpheme_type: performative
+prefix type: preformative
 
 Text: """
-What category does the morpheme of the word ܫܟܚ belong to? Choose from preformative, passive prefix, verbal stem morpheme, verbal ending, nominal ending, or emphatic marker.
+Step 7: What category does the suffixed morpheme generated in Step 5 belong to? Choose from masculine emphatic (ܐ), feminine emphatic (ܬܐ), masculine absolute plural (ܝܢ), or feminine absolute plural (ܢ).
 """
-morpheme_type: verbal ending
+suffix type: masculine absolute plural
 
 Text: """
-What category does the morpheme of the word ܝܢ belong to? Choose from preformative, passive prefix, verbal stem morpheme, verbal ending, nominal ending, or emphatic marker.
+Step 8: Does the rest of the word (with all elements detected in Step 6 and Step 7 removed, in this case ܡܫܟ) have any verbal ending? Remove the verbal ending if any.
 """
-morpheme_type: nominal ending
+verbal ending:
+word without verbal ending: ܡܫܟ
 
 Text: """
-What is the complete form of the word ܢܢ?
+Step 9: What is the complete root of the word generated in Step 8?
 """
-complete: ܚܢܢ
+root: ܡܫܟ
 '''
+
 
 
 def get_question_message(sentence: str) -> str:
