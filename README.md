@@ -28,3 +28,5 @@ python parser.py -d data/isaiah_test.txt -o output/isaiah_test.txt -m plus
 ```
 
 This will produce the parse trees for the first 2 sentences in Isaiah.
+
+根目录下建立一个.env文档，内容：DASHSCOPE_API_KEY=... 即可
